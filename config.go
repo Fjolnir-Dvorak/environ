@@ -18,143 +18,93 @@
 //   - Linux/BSDs: ${XDG_CACHE_HOME} (${HOME}/.cache)
 //   - MacOSX: "${HOME}/Library/Caches"
 //
-// configdir returns paths inside the above folders.
+// environ returns paths inside the above folders.
 
-package configdir
+package environ
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
 
-type ConfigType int
+// ConfigDir keeps setting for querying folders.
+
+type Folder int
 
 const (
-	System ConfigType = iota
-	Global
-	All
-	Existing
-	Local
+	ConfigGlobal Folder = iota
+	ConfigLocal
 	Cache
+	DataLocal
+	DataGlobal
 )
 
-// Config represents each folder
-type Config struct {
-	Path string
-	Type ConfigType
+type AppData struct {
+	vendorName      string
+	applicationName string
+	configGlobal    []string
+	configLocal     string
+	cache           string
+	dataLocal       string
+	dataGlobal      []string
 }
 
-func (c Config) Open(fileName string) (*os.File, error) {
-	return os.Open(filepath.Join(c.Path, fileName))
-}
-
-func (c Config) Create(fileName string) (*os.File, error) {
-	err := c.CreateParentDir(fileName)
-	if err != nil {
-		return nil, err
+func New(vendorName, applicationName string) AppData {
+	ad := AppData{
+		vendorName:      vendorName,
+		applicationName: applicationName,
 	}
-	return os.Create(filepath.Join(c.Path, fileName))
+	ad.configGlobal = ad.addAppInfoStruct(configGlobal)
+	ad.configLocal = ad.addAppInfo(configLocal)
+	ad.cache = ad.addAppInfo(cache)
+	ad.dataLocal = ad.addAppInfo(dataLocal)
+	ad.dataGlobal = ad.addAppInfoStruct(dataGlobal)
+	return ad
 }
-
-func (c Config) ReadFile(fileName string) ([]byte, error) {
-	return ioutil.ReadFile(filepath.Join(c.Path, fileName))
-}
-
-// CreateParentDir creates the parent directory of fileName inside c. fileName
-// is a relative path inside c, containing zero or more path separators.
-func (c Config) CreateParentDir(fileName string) error {
-	return os.MkdirAll(filepath.Dir(filepath.Join(c.Path, fileName)), 0755)
-}
-
-func (c Config) WriteFile(fileName string, data []byte) error {
-	err := c.CreateParentDir(fileName)
-	if err != nil {
-		return err
+func (ad AppData) EnsureExistence(folder Folder) AppData {
+	var path string
+	switch folder {
+	case ConfigGlobal:
+		path = ad.configGlobal[0]
+		break
+	case CONFIG_LOCAL:
+		path = ad.configLocal
+	case Cache:
+		path = ad.cache
+	case DataGlobal:
+		path = ad.dataGlobal[0]
+	case DataLocal:
+		path = ad.dataLocal
 	}
-	return ioutil.WriteFile(filepath.Join(c.Path, fileName), data, 0644)
+	os.MkdirAll(path, os.ModePerm)
+	return ad
 }
 
-func (c Config) MkdirAll() error {
-	return os.MkdirAll(c.Path, 0755)
+func (ad AppData) addAppInfo(path string) string {
+	return filepath.Join(path, ad.vendorName, ad.applicationName)
 }
-
-func (c Config) Exists(fileName string) bool {
-	_, err := os.Stat(filepath.Join(c.Path, fileName))
-	return !os.IsNotExist(err)
-}
-
-// ConfigDir keeps setting for querying folders.
-type ConfigDir struct {
-	VendorName      string
-	ApplicationName string
-	LocalPath       string
-}
-
-func New(vendorName, applicationName string) ConfigDir {
-	return ConfigDir{
-		VendorName:      vendorName,
-		ApplicationName: applicationName,
+func (ad AppData) addAppInfoStruct(path []string) []string {
+	length := len(path)
+	toReturn := make([]string, length)
+	for i := 0; i < length; i++ {
+		toReturn[i] = ad.addAppInfo(path[i])
 	}
 }
-
-func (c ConfigDir) joinPath(root string) string {
-	if c.VendorName != "" && hasVendorName {
-		return filepath.Join(root, c.VendorName, c.ApplicationName)
-	}
-	return filepath.Join(root, c.ApplicationName)
+func (ad AppData) VendorName() string {
+	return ad.vendorName
 }
-
-func (c ConfigDir) QueryFolders(configType ConfigType) []*Config {
-	if configType == Cache {
-		return []*Config{c.QueryCacheFolder()}
-	}
-	var result []*Config
-	if c.LocalPath != "" && configType != System && configType != Global {
-		result = append(result, &Config{
-			Path: c.LocalPath,
-			Type: Local,
-		})
-	}
-	if configType != System && configType != Local {
-		result = append(result, &Config{
-			Path: c.joinPath(globalSettingFolder),
-			Type: Global,
-		})
-	}
-	if configType != Global && configType != Local {
-		for _, root := range systemSettingFolders {
-			result = append(result, &Config{
-				Path: c.joinPath(root),
-				Type: System,
-			})
-		}
-	}
-	if configType != Existing {
-		return result
-	}
-	var existing []*Config
-	for _, entry := range result {
-		if _, err := os.Stat(entry.Path); !os.IsNotExist(err) {
-			existing = append(existing, entry)
-		}
-	}
-	return existing
+func (ad AppData) ApplicationName() string {
+	return ad.applicationName
 }
-
-func (c ConfigDir) QueryFolderContainsFile(fileName string) *Config {
-	configs := c.QueryFolders(Existing)
-	for _, config := range configs {
-		if _, err := os.Stat(filepath.Join(config.Path, fileName)); !os.IsNotExist(err) {
-			return config
-		}
-	}
-	return nil
+func (ad AppData) ConfigGlobal() []string {
+	return ad.configGlobal
 }
-
-func (c ConfigDir) QueryCacheFolder() *Config {
-	return &Config{
-		Path: c.joinPath(cacheFolder),
-		Type: Cache,
-	}
+func (ad AppData) Cache() string {
+	return ad.cache
+}
+func (ad AppData) DataLocal() string {
+	return ad.dataLocal
+}
+func (ad AppData) DataGlobal() []string {
+	return ad.dataGlobal
 }
