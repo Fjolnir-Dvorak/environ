@@ -8,13 +8,13 @@
 //
 // User wide configuration folders:
 //
-//   - Windows: %APPDATA% (C:\Users\<User>\AppData\Roaming)
+//   - Windows: %APPDATA% (C:\Users\<User>\Environ\Roaming)
 //   - Linux/BSDs: ${XDG_CONFIG_HOME} (${HOME}/.config)
 //   - MacOSX: "${HOME}/Library/Application Support"
 //
 // User wide cache folders:
 //
-//   - Windows: %LOCALAPPDATA% (C:\Users\<User>\AppData\Local)
+//   - Windows: %LOCALAPPDATA% (C:\Users\<User>\Environ\Local)
 //   - Linux/BSDs: ${XDG_CACHE_HOME} (${HOME}/.cache)
 //   - MacOSX: "${HOME}/Library/Caches"
 //
@@ -39,7 +39,7 @@ const (
 	DataGlobal
 )
 
-type AppData struct {
+type Environ struct {
 	vendorName      string
 	applicationName string
 	configGlobal    []string
@@ -47,10 +47,18 @@ type AppData struct {
 	cache           string
 	dataLocal       string
 	dataGlobal      []string
+
+	varVendorName      string
+	varApplicationName string
+	varConfigGlobal    string
+	varConfigLocal     string
+	varCache           string
+	varDataLocal       string
+	varDataGlobal      string
 }
 
-func New(vendorName, applicationName string) AppData {
-	ad := AppData{
+func New(vendorName, applicationName string) Environ {
+	ad := Environ{
 		vendorName:      vendorName,
 		applicationName: applicationName,
 	}
@@ -59,15 +67,21 @@ func New(vendorName, applicationName string) AppData {
 	ad.cache = ad.addAppInfo(cache)
 	ad.dataLocal = ad.addAppInfo(dataLocal)
 	ad.dataGlobal = ad.addAppInfoStruct(dataGlobal)
+
+	ad.varConfigGlobal = ad.addAppInfo(CONFIG_SHARED)
+	ad.varConfigLocal = ad.addAppInfo(CONFIG_LOCAL)
+	ad.varCache = ad.addAppInfo(CACHE)
+	ad.varDataLocal = ad.addAppInfo(DATA_LOCAL)
+	ad.varDataGlobal = ad.addAppInfo(DATA_SHARED)
 	return ad
 }
-func (ad AppData) EnsureExistence(folder Folder) AppData {
+func (ad Environ) EnsureExistence(folder Folder) Environ {
 	var path string
 	switch folder {
 	case ConfigGlobal:
 		path = ad.configGlobal[0]
 		break
-	case CONFIG_LOCAL:
+	case ConfigLocal:
 		path = ad.configLocal
 	case Cache:
 		path = ad.cache
@@ -80,31 +94,58 @@ func (ad AppData) EnsureExistence(folder Folder) AppData {
 	return ad
 }
 
-func (ad AppData) addAppInfo(path string) string {
+func (ad Environ) addAppInfo(path string) string {
 	return filepath.Join(path, ad.vendorName, ad.applicationName)
 }
-func (ad AppData) addAppInfoStruct(path []string) []string {
+func (ad Environ) addAppInfoStruct(path []string) []string {
 	length := len(path)
 	toReturn := make([]string, length)
 	for i := 0; i < length; i++ {
 		toReturn[i] = ad.addAppInfo(path[i])
 	}
+	return toReturn
 }
-func (ad AppData) VendorName() string {
+
+func (ad Environ) VendorName() string {
 	return ad.vendorName
 }
-func (ad AppData) ApplicationName() string {
+func (ad Environ) ApplicationName() string {
 	return ad.applicationName
 }
-func (ad AppData) ConfigGlobal() []string {
+func (ad Environ) ConfigGlobal() []string {
 	return ad.configGlobal
 }
-func (ad AppData) Cache() string {
+func (ad Environ) ConfigLocal() string {
+	return ad.configLocal
+}
+func (ad Environ) Cache() string {
 	return ad.cache
 }
-func (ad AppData) DataLocal() string {
+func (ad Environ) DataLocal() string {
 	return ad.dataLocal
 }
-func (ad AppData) DataGlobal() []string {
+func (ad Environ) DataGlobal() []string {
 	return ad.dataGlobal
+}
+
+func (ad Environ) VarVendorName() string {
+	return ad.varVendorName
+}
+func (ad Environ) VarApplicationName() string {
+	return ad.varApplicationName
+}
+func (ad Environ) VarConfigGlobal() string {
+	return ad.varConfigGlobal
+}
+func (ad Environ) VarConfigLocal() string {
+	return ad.varConfigLocal
+}
+func (ad Environ) VarCache() string {
+	return ad.varCache
+}
+func (ad Environ) VarDataLocal() string {
+	return ad.varDataLocal
+}
+func (ad Environ) VarDataGlobal() string {
+	return ad.varDataGlobal
 }

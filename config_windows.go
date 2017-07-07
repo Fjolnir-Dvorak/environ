@@ -1,27 +1,32 @@
 package environ
 
 import "os"
+import "strings"
 
 const (
-	CONFIG_LOCAL  = "APPDATA"
-	CONFIG_SHARED = "PROGRAMDATA"
-	CACHE         = "TEMP"
-	DATA_LOCAL    = "LOCALAPPDATA"
-	DATA_SHARED   = "PROGRAMDATA"
+	CONFIG_LOCAL  = "%APPDATA%"
+	CONFIG_SHARED = "%PROGRAMDATA%"
+	CACHE         = "%TEMP%"
+	DATA_LOCAL    = "%LOCALAPPDATA%"
+	DATA_SHARED   = "%PROGRAMDATA%"
 )
 
 var (
-	configGlobal  []string
-	configLocal   string
-	cache         string
-	dataLocal     string
-	dataGlobal    []string
+	configGlobal []string
+	configLocal  string
+	cache        string
+	dataLocal    string
+	dataGlobal   []string
 )
 
 func init() {
-	configLocal = os.Getenv(CONFIG_LOCAL)
-	configGlobal = []string{os.Getenv(CONFIG_SHARED)}
-	cache = os.Getenv(CACHE)
-	dataLocal = os.Getenv(DATA_LOCAL)
-	dataGlobal = []string{os.Getenv(DATA_SHARED)}
+	configLocal = getenv(CONFIG_LOCAL)
+	configGlobal = []string{getenv(CONFIG_SHARED)}
+	cache = getenv(CACHE)
+	dataLocal = getenv(DATA_LOCAL)
+	dataGlobal = []string{getenv(DATA_SHARED)}
+}
+
+func getenv(variable string) string {
+	return os.Getenv(strings.Trim(variable, "%"))
 }
