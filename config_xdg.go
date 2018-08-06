@@ -4,8 +4,7 @@ package environ
 
 import (
 	"os"
-	"path/filepath"
-	"strings"
+		"strings"
 )
 
 // https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
@@ -41,11 +40,11 @@ func init() {
 		configLocal = os.ExpandEnv(CONFIG_LOCAL_DEF)
 	}
 
-	configGlobal = os.Getenv(CONFIG_SHARED)
-	if configGlobal == "" {
-		configGlobal = CONFIG_SHARED_DEF
+	var configGlobalTmp = os.Getenv(CONFIG_SHARED)
+	if configGlobalTmp == "" {
+		configGlobalTmp = CONFIG_SHARED_DEF
 	}
-	configGlobal = strings.Split(configGlobal, PATH_SEPARATOR)
+	configGlobal = strings.Split(configGlobalTmp, PATH_SEPARATOR)
 
 	cache = os.Getenv(CACHE)
 	if os.Getenv(configLocal) == "" {
@@ -57,9 +56,9 @@ func init() {
 		dataLocal = os.ExpandEnv(DATA_LOCAL_DEF)
 	}
 
-	dataGlobal = os.Getenv(DATA_SHARED)
-	if dataGlobal == "" {
-		dataGlobal = DATA_SHARED_DEF
+	var dataGlobalTmp = os.Getenv(DATA_SHARED)
+	if dataGlobalTmp == "" {
+		dataGlobalTmp = DATA_SHARED_DEF
 	}
-	dataGlobal = strings.Split(dataGlobal, PATH_SEPARATOR)
+	dataGlobal = strings.Split(dataGlobalTmp, PATH_SEPARATOR)
 }
