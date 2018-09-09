@@ -1,8 +1,8 @@
----
-title: configdir for Golang
----
+# Environ:
 
 Multi platform library for system dependend directories.
+
+Based on the github project [https://github.com/shibukawa/configdir](https://github.com/shibukawa/configdir)
 
 This library is designed to get the default directories of the operation
 system like HOME, TMP or configuration directories. It implements the
@@ -61,7 +61,7 @@ Implementation details per operation system:
     | HOME               | $HOME                       | /Users/username                      |
     | UserConfig         |                             | $HOME//Library/Application Support   |
     | GlobalConfig       |                             | /Library/Application Support         |
-    | UserTemp           |                             | /var/folders/xl/random_stuff/T/      |
+    | UserTemp           | $TMPDATA                    | /var/folders/xl/random_stuff/T/      |
     | GlobalTemp         |                             |                                      |
     | UserCache          |                             | $HOME/Library/Cache                  |
     | GlobalCache        |                             | /Library/Cache                       |
@@ -74,6 +74,17 @@ Implementation details per operation system:
     | Music              |                             | $HOME/Music                          |
     | Videos             |                             | $HOME/Videos                         |
     | SaveGames          |                             | $HOME//Library/Application Support   |
+
+Non existing values will be filled with the most similar value. If an OS has no global temp
+ instead of nothing environ will return the local temp to enable a simple workflow
+ where the developer has not to bother about checking for existence of that configuration
+ key.
+
+Regarding MacOS I have very little information about program structures
+ and how program data is distinguished from configuration files. To get
+ a little bit more structure into the application directories configuration
+ file will go into a subfolder `config` and data files will go into a subfolder
+ `data`.
 
 License
 =======
