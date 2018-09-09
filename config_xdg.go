@@ -4,7 +4,7 @@ package environ
 
 import (
 	"os"
-		"strings"
+	"strings"
 )
 
 // https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
@@ -27,11 +27,11 @@ const (
 )
 
 var (
-	configGlobal  []string
-	configLocal   string
-	cache         string
-	dataLocal     string
-	dataGlobal    []string
+	configGlobal []string
+	configLocal  string
+	cache        string
+	dataLocal    string
+	dataGlobal   []string
 )
 
 func init() {
