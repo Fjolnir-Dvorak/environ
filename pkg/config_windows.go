@@ -6,23 +6,23 @@ import (
 )
 
 const (
-	ENV_HOME                = "UserProfile"
-	ENV_USER_CONFIG         = "AppData"
-	ENV_GLOBAL_CONFIG       = "AllUsersProfile"
-	ENV_USER_TEMP           = "Temp"
-	ENV_USER_CACHE          = "LocalAppData"
-	ENV_GLOBAL_CACHE        = "ProgramData"
-	ENV_USER_PROGRAM_DATA   = "LocalAppData"
-	ENV_GLOBAL_PROGRAM_DATA = "ProgramFiles"
+	EnvHome              = "UserProfile"
+	EnvUserConfig        = "AppData"
+	EnvGlobalConfig      = "AllUsersProfile"
+	EnvUserTemp          = "Temp"
+	EnvUserCache         = "LocalAppData"
+	EnvGlobalCache       = "ProgramData"
+	EnvUserProgramData   = "LocalAppData"
+	EnvGlobalProgramData = "ProgramFiles"
 
-	REGISTRY_KEY_PATH    = `Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders`
-	REGISTRY_DESKTOP     = `Desktop`
-	REGISTRY_DOCUMENTS   = `Personal`
-	REGISTRY_DOWNLOADS   = `{374DE290-123F-4565-9164-39C4925E467B}`
-	REGISTRY_PICTURES    = `My Pictures`
-	REGISTRY_MUSIC       = `My Music`
-	REGISTRY_VIDEOS      = `My Videos`
-	REGISTRY_SAVED_GAMES = `{4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4}`
+	RegistryKeyPath    = `Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders`
+	RegistryDesktop    = `Desktop`
+	RegistryDocuments  = `Personal`
+	RegistryDownloads  = `{374DE290-123F-4565-9164-39C4925E467B}`
+	RegistryPictures   = `My Pictures`
+	RegistryMusic      = `My Music`
+	RegistryVideos     = `My Videos`
+	RegistrySavedGames = `{4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4}`
 )
 
 var (
@@ -45,30 +45,30 @@ var (
 )
 
 func create() Environ {
-	home = getenv(ENV_HOME)
-	userConfig = getenv(ENV_USER_CONFIG)
-	globalConfig = []string{getenv(ENV_GLOBAL_CONFIG)}
-	userTemp = getenv(ENV_USER_TEMP)
-	userCache = getenv(ENV_USER_CACHE)
-	globalCache = getenv(ENV_GLOBAL_CACHE)
-	userProgramData = getenv(ENV_USER_PROGRAM_DATA)
-	globalProgramData = []string{getenv(ENV_GLOBAL_PROGRAM_DATA)}
+	home = getenv(EnvHome)
+	userConfig = getenv(EnvUserConfig)
+	globalConfig = []string{getenv(EnvGlobalConfig)}
+	userTemp = getenv(EnvUserTemp)
+	userCache = getenv(EnvUserCache)
+	globalCache = getenv(EnvGlobalCache)
+	userProgramData = getenv(EnvUserProgramData)
+	globalProgramData = []string{getenv(EnvGlobalProgramData)}
 
 	key, err := registry.OpenKey(registry.CURRENT_USER,
-		REGISTRY_KEY_PATH,
+		RegistryKeyPath,
 		registry.QUERY_VALUE)
 	if err != nil {
 		// TODO handle the error
 	}
 	defer key.Close()
 
-	desktop = getRegistry(key, REGISTRY_DESKTOP, "")
-	documents = getRegistry(key, REGISTRY_DOCUMENTS, "")
-	downloads = getRegistry(key, REGISTRY_DOWNLOADS, "")
-	pictures = getRegistry(key, REGISTRY_PICTURES, "")
-	music = getRegistry(key, REGISTRY_MUSIC, "")
-	videos = getRegistry(key, REGISTRY_VIDEOS, "")
-	saveGames = getRegistry(key, REGISTRY_SAVED_GAMES, "")
+	desktop = getRegistry(key, RegistryDesktop, "")
+	documents = getRegistry(key, RegistryDocuments, "")
+	downloads = getRegistry(key, RegistryDownloads, "")
+	pictures = getRegistry(key, RegistryPictures, "")
+	music = getRegistry(key, RegistryMusic, "")
+	videos = getRegistry(key, RegistryVideos, "")
+	saveGames = getRegistry(key, RegistrySavedGames, "")
 
 	return Environ{
 		home:      home,
