@@ -21,7 +21,7 @@ const (
 	registryDownloads  = `{374DE290-123F-4565-9164-39C4925E467B}`
 	registryPictures   = `My Pictures`
 	registryMusic      = `My Music`
-	registryVideos     = `My Videos`
+	registryVideos     = `My Video`
 	registrySavedGames = `{4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4}`
 )
 
