@@ -20,7 +20,7 @@
 //
 // environ returns paths inside the above folders.
 
-package environ
+package pkg
 
 import (
 	"os"
@@ -42,11 +42,30 @@ const (
 type Environ struct {
 	vendorName      string
 	applicationName string
-	configGlobal    []string
-	configLocal     string
-	cache           string
-	dataLocal       string
-	dataGlobal      []string
+
+	home      string
+	desktop   string
+	documents string
+	downloads string
+	pictures  string
+	music     string
+	videos    string
+	saveGames string
+
+	userConfig        string
+	globalConfig      string
+	userTemp          string
+	globalTemp        string
+	userCache         string
+	globalCache       string
+	localProgramData  string
+	GlobalProgramData string
+
+	configGlobal []string
+	configLocal  string
+	cache        string
+	dataLocal    string
+	dataGlobal   []string
 
 	varVendorName      string
 	varApplicationName string
@@ -57,7 +76,8 @@ type Environ struct {
 	varDataGlobal      string
 }
 
-func New(vendorName, applicationName string) Environ {
+func New(vendorName,
+	applicationName string) Environ {
 	ad := Environ{
 		vendorName:      vendorName,
 		applicationName: applicationName,
@@ -75,6 +95,7 @@ func New(vendorName, applicationName string) Environ {
 	ad.varDataGlobal = ad.addAppInfo(DATA_SHARED)
 	return ad
 }
+
 func (ad Environ) EnsureExistence(folder Folder) Environ {
 	var path string
 	switch folder {

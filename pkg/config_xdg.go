@@ -1,6 +1,6 @@
 // +build !windows,!darwin
 
-package environ
+package pkg
 
 import (
 	"os"
@@ -27,6 +27,24 @@ const (
 )
 
 var (
+	home      string
+	desktop   string
+	documents string
+	downloads string
+	pictures  string
+	music     string
+	videos    string
+	saveGames string
+
+	userConfig        string
+	globalConfig      []string
+	userTemp          string
+	globalTemp        string
+	userCache         string
+	globalCache       string
+	localProgramData  string
+	GlobalProgramData []string
+
 	configGlobal []string
 	configLocal  string
 	cache        string

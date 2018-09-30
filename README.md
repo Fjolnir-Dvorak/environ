@@ -23,7 +23,7 @@ Implementation details per operation system:
     | GlobalTemp         | $env:Temp                   |                                      |              |
     | UserCache          | $env:LocalAppData           | C:\Users\username\AppData\Local      |              |
     | GlobalCache        | $env:ProgramData            | C:\ProgramData                       |              |
-    | LocalProgramData   | $env:LocalAppData           | C:\Users\username\AppData\Local      |              |
+    | UserProgramData    | $env:LocalAppData           | C:\Users\username\AppData\Local      |              |
     | GlobalProgramData  | $env:ProgramFiles           | C:\ProgramFiles                      |              |
     | Desktop            |                             | C:\Users\username\Desktop            | Desktop      |
     | Documents          |                             | C:\Users\username\Documents          | Personal     |
@@ -44,7 +44,7 @@ Implementation details per operation system:
     | GlobalTemp         |                             | /tmp                                 |
     | UserCache          | $XDG_CACHE_HOME             | $HOME/.cache                         |
     | GlobalCache        |                             | /var/cache                           |
-    | LocalProgramData   | $XDG_DATA_HOME              | $HOME/.local/share                   |
+    | UserProgramData    | $XDG_DATA_HOME              | $HOME/.local/share                   |
     | GlobalProgramData  | $XDG_DATA_DIRS              | /usr/share                           |
     | Desktop            | $XDG_DESKTOP_DIR            | $HOME/Desktop                        |
     | Documents          | $XDG_DOCUMENTS_DIR          | $HOME/Documents                      |
@@ -65,7 +65,7 @@ Implementation details per operation system:
     | GlobalTemp         |                             |                                      |
     | UserCache          |                             | $HOME/Library/Cache                  |
     | GlobalCache        |                             | /Library/Cache                       |
-    | LocalProgramData   |                             | $HOME//Library/Application Support   |
+    | UserProgramData    |                             | $HOME//Library/Application Support   |
     | GlobalProgramData  |                             | /Library/Application Support         |
     | Desktop            |                             | $HOME/Desktop                        |
     | Documents          |                             | $HOME/Documents                      |

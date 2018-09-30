@@ -1,4 +1,4 @@
-package environ
+package pkg
 
 import "os"
 
