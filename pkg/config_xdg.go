@@ -39,11 +39,10 @@ var (
 	userConfig        string
 	globalConfig      []string
 	userTemp          string
-	globalTemp        string
 	userCache         string
 	globalCache       string
 	localProgramData  string
-	GlobalProgramData []string
+	globalProgramData []string
 
 	configGlobal []string
 	configLocal  string

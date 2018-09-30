@@ -27,18 +27,6 @@ import (
 	"path/filepath"
 )
 
-// ConfigDir keeps setting for querying folders.
-
-type Folder int
-
-const (
-	ConfigGlobal Folder = iota
-	ConfigLocal
-	Cache
-	DataLocal
-	DataGlobal
-)
-
 type Environ struct {
 	vendorName      string
 	applicationName string
@@ -53,78 +41,164 @@ type Environ struct {
 	saveGames string
 
 	userConfig        string
-	globalConfig      string
+	globalConfig      []string
 	userTemp          string
-	globalTemp        string
 	userCache         string
 	globalCache       string
-	localProgramData  string
-	GlobalProgramData string
-
-	configGlobal []string
-	configLocal  string
-	cache        string
-	dataLocal    string
-	dataGlobal   []string
-
-	varVendorName      string
-	varApplicationName string
-	varConfigGlobal    string
-	varConfigLocal     string
-	varCache           string
-	varDataLocal       string
-	varDataGlobal      string
+	userProgramData   string
+	globalProgramData []string
 }
 
-func New(vendorName,
-	applicationName string) Environ {
-	ad := Environ{
+type adInfo struct {
+	vendorName      string
+	applicationName string
+}
+
+var (
+	CacheResults            = true
+	CreateTemp              = true
+	CreateUserConfig        = true
+	CreateGlobalConfig      = false
+	CreateUserCache         = false
+	CreateGlobalCache       = false
+	CreateUserProgramData   = false
+	CreateGlobalProgramData = false
+	CreateSavedGames        = false
+
+	cachedEnviron *Environ = nil
+)
+
+func New(vendorName, applicationName string) Environ {
+	var ad Environ
+	if cachedEnviron != nil {
+		ad = *cachedEnviron
+	} else {
+		ad = create()
+		if CacheResults {
+			cachedEnviron = &ad
+		}
+	}
+
+	ai := adInfo{
 		vendorName:      vendorName,
 		applicationName: applicationName,
 	}
-	ad.configGlobal = ad.addAppInfoStruct(configGlobal)
-	ad.configLocal = ad.addAppInfo(configLocal)
-	ad.cache = ad.addAppInfo(cache)
-	ad.dataLocal = ad.addAppInfo(dataLocal)
-	ad.dataGlobal = ad.addAppInfoStruct(dataGlobal)
 
-	ad.varConfigGlobal = ad.addAppInfo(CONFIG_SHARED)
-	ad.varConfigLocal = ad.addAppInfo(CONFIG_LOCAL)
-	ad.varCache = ad.addAppInfo(CACHE)
-	ad.varDataLocal = ad.addAppInfo(DATA_LOCAL)
-	ad.varDataGlobal = ad.addAppInfo(DATA_SHARED)
-	return ad
-}
+	return Environ{
+		vendorName:      ai.vendorName,
+		applicationName: ai.applicationName,
 
-func (ad Environ) EnsureExistence(folder Folder) Environ {
-	var path string
-	switch folder {
-	case ConfigGlobal:
-		path = ad.configGlobal[0]
-		break
-	case ConfigLocal:
-		path = ad.configLocal
-	case Cache:
-		path = ad.cache
-	case DataGlobal:
-		path = ad.dataGlobal[0]
-	case DataLocal:
-		path = ad.dataLocal
+		home:      ad.home,
+		desktop:   ad.desktop,
+		documents: ad.documents,
+		downloads: ad.downloads,
+		pictures:  ad.pictures,
+		music:     ad.music,
+		videos:    ad.videos,
+		saveGames: ai.addAppInfo(ad.saveGames, CreateSavedGames, false),
+
+		userConfig:        ai.addAppInfo(ad.userConfig, CreateUserConfig, false),
+		globalConfig:      ai.addAppInfoStruct(ad.globalConfig, CreateGlobalConfig, true),
+		userTemp:          ai.addAppInfo(ad.userTemp, CreateTemp, false),
+		userCache:         ai.addAppInfo(ad.userCache, CreateUserCache, false),
+		globalCache:       ai.addAppInfo(ad.globalCache, CreateGlobalCache, true),
+		userProgramData:   ai.addAppInfo(ad.userProgramData, CreateUserProgramData, false),
+		globalProgramData: ai.addAppInfoStruct(ad.globalProgramData, CreateGlobalProgramData, true),
 	}
-	os.MkdirAll(path, os.ModePerm)
-	return ad
 }
 
-func (ad Environ) addAppInfo(path string) string {
-	return filepath.Join(path, ad.vendorName, ad.applicationName)
+func createDir(path string, create bool, isGlobal bool) {
+	if create {
+		filemode := 0500
+		if isGlobal {
+			filemode = 0555
+		}
+		os.MkdirAll(path, os.FileMode(filemode))
+	}
 }
-func (ad Environ) addAppInfoStruct(path []string) []string {
-	length := len(path)
+
+func (ad adInfo) addAppInfo(path string, create bool, isGlobal bool) string {
+	joined := filepath.Join(path, ad.vendorName, ad.applicationName)
+	createDir(joined, create, isGlobal)
+	return joined
+}
+
+func (ad adInfo) addAppInfoStruct(paths []string, create bool, isGlobal bool) []string {
+	length := len(paths)
 	toReturn := make([]string, length)
 	for i := 0; i < length; i++ {
-		toReturn[i] = ad.addAppInfo(path[i])
+		toReturn[i] = ad.addAppInfo(paths[i], false, false)
 	}
+	createDir(toReturn[0], create, isGlobal)
 	return toReturn
+}
+
+func (ad Environ) Home() string {
+	return ad.home
+}
+
+func (ad Environ) Desktop() string {
+	return ad.desktop
+}
+
+func (ad Environ) Documents() string {
+	return ad.documents
+}
+
+func (ad Environ) Downloads() string {
+	return ad.downloads
+}
+
+func (ad Environ) Pictures() string {
+	return ad.pictures
+}
+
+func (ad Environ) Music() string {
+	return ad.music
+}
+
+func (ad Environ) Videos() string {
+	return ad.videos
+}
+
+func (ad Environ) SaveGames() string {
+	return ad.saveGames
+}
+
+func (ad Environ) UserConfig() string {
+	return ad.userConfig
+}
+
+func (ad Environ) GlobalConfigAll() []string {
+	return ad.globalConfig
+}
+
+func (ad Environ) GlobalConfig() string {
+	return ad.globalConfig[0]
+}
+
+func (ad Environ) UserTemp() string {
+	return ad.userTemp
+}
+
+func (ad Environ) UserCache() string {
+	return ad.userCache
+}
+
+func (ad Environ) GlobalCache() string {
+	return ad.globalCache
+}
+
+func (ad Environ) UserProgramData() string {
+	return ad.userProgramData
+}
+
+func (ad Environ) GlobalProgramDataAll() []string {
+	return ad.globalProgramData
+}
+
+func (ad Environ) GlobalProgramData() string {
+	return ad.globalProgramData[0]
 }
 
 func (ad Environ) VendorName() string {
@@ -132,41 +206,4 @@ func (ad Environ) VendorName() string {
 }
 func (ad Environ) ApplicationName() string {
 	return ad.applicationName
-}
-func (ad Environ) ConfigGlobal() []string {
-	return ad.configGlobal
-}
-func (ad Environ) ConfigLocal() string {
-	return ad.configLocal
-}
-func (ad Environ) Cache() string {
-	return ad.cache
-}
-func (ad Environ) DataLocal() string {
-	return ad.dataLocal
-}
-func (ad Environ) DataGlobal() []string {
-	return ad.dataGlobal
-}
-
-func (ad Environ) VarVendorName() string {
-	return ad.varVendorName
-}
-func (ad Environ) VarApplicationName() string {
-	return ad.varApplicationName
-}
-func (ad Environ) VarConfigGlobal() string {
-	return ad.varConfigGlobal
-}
-func (ad Environ) VarConfigLocal() string {
-	return ad.varConfigLocal
-}
-func (ad Environ) VarCache() string {
-	return ad.varCache
-}
-func (ad Environ) VarDataLocal() string {
-	return ad.varDataLocal
-}
-func (ad Environ) VarDataGlobal() string {
-	return ad.varDataGlobal
 }

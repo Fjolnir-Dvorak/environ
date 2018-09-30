@@ -10,7 +10,6 @@ const (
 	ENV_USER_CONFIG         = "AppData"
 	ENV_GLOBAL_CONFIG       = "AllUsersProfile"
 	ENV_USER_TEMP           = "Temp"
-	ENV_GLOBAL_TEMP         = "Temp"
 	ENV_USER_CACHE          = "LocalAppData"
 	ENV_GLOBAL_CACHE        = "ProgramData"
 	ENV_USER_PROGRAM_DATA   = "LocalAppData"
@@ -39,28 +38,17 @@ var (
 	userConfig        string
 	globalConfig      []string
 	userTemp          string
-	globalTemp        string
 	userCache         string
 	globalCache       string
 	userProgramData   string
 	globalProgramData []string
-
-	hasUserConfig        = true
-	hasGlobalConfig      = true
-	hasUserTmp           = true
-	hasGlobalTmp         = false
-	hasUserCache         = true
-	hasGlobalCache       = true
-	hasUserProgramData   = true
-	hasGlobalProgramData = true
 )
 
-func init() {
+func create() Environ {
 	home = getenv(ENV_HOME)
 	userConfig = getenv(ENV_USER_CONFIG)
 	globalConfig = []string{getenv(ENV_GLOBAL_CONFIG)}
 	userTemp = getenv(ENV_USER_TEMP)
-	globalTemp = getenv(ENV_GLOBAL_TEMP)
 	userCache = getenv(ENV_USER_CACHE)
 	globalCache = getenv(ENV_GLOBAL_CACHE)
 	userProgramData = getenv(ENV_USER_PROGRAM_DATA)
@@ -81,6 +69,25 @@ func init() {
 	music = getRegistry(key, REGISTRY_MUSIC, "")
 	videos = getRegistry(key, REGISTRY_VIDEOS, "")
 	saveGames = getRegistry(key, REGISTRY_SAVED_GAMES, "")
+
+	return Environ{
+		home:      home,
+		desktop:   desktop,
+		documents: documents,
+		downloads: downloads,
+		pictures:  pictures,
+		music:     music,
+		videos:    videos,
+		saveGames: saveGames,
+
+		userConfig:        userConfig,
+		globalConfig:      globalConfig,
+		userTemp:          userTemp,
+		userCache:         userCache,
+		globalCache:       globalCache,
+		userProgramData:   userProgramData,
+		globalProgramData: globalProgramData,
+	}
 }
 
 func getRegistry(key registry.Key, name string, def string) string {

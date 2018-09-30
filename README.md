@@ -20,7 +20,6 @@ Implementation details per operation system:
     | UserConfig         | $env:AppData                | C:\Users\username\AppData\Roaming    |              |
     | GlobalConfig       | $env:AllUsersProfile        | C:\ProgramData                       |              |
     | UserTemp           | $env:Temp                   | C:\Users\username\AppData\Local\Temp |              |
-    | GlobalTemp         | $env:Temp                   |                                      |              |
     | UserCache          | $env:LocalAppData           | C:\Users\username\AppData\Local      |              |
     | GlobalCache        | $env:ProgramData            | C:\ProgramData                       |              |
     | UserProgramData    | $env:LocalAppData           | C:\Users\username\AppData\Local      |              |
@@ -41,7 +40,6 @@ Implementation details per operation system:
     | UserConfig         | $XDG_CONFIG_HOME            | $HOME/.config                        |
     | GlobalConfig       | $XDG_CONFIG_DIRS            | /etc/xdg                             |
     | UserTemp           | $XDG_RUNTIME_DIR            |                                      |
-    | GlobalTemp         |                             | /tmp                                 |
     | UserCache          | $XDG_CACHE_HOME             | $HOME/.cache                         |
     | GlobalCache        |                             | /var/cache                           |
     | UserProgramData    | $XDG_DATA_HOME              | $HOME/.local/share                   |
@@ -62,7 +60,6 @@ Implementation details per operation system:
     | UserConfig         |                             | $HOME//Library/Application Support   |
     | GlobalConfig       |                             | /Library/Application Support         |
     | UserTemp           | $TMPDATA                    | /var/folders/xl/random_stuff/T/      |
-    | GlobalTemp         |                             |                                      |
     | UserCache          |                             | $HOME/Library/Cache                  |
     | GlobalCache        |                             | /Library/Cache                       |
     | UserProgramData    |                             | $HOME//Library/Application Support   |
