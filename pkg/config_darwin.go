@@ -1,34 +1,69 @@
 package pkg
 
-import "os"
+import (
+	"os"
+)
 
 const (
 	// Sorry. I do know nothing about that system. That was the best I could find.
-	CONFIG_LOCAL_DEF  = "${home}/Library/Application Support"
-	CONFIG_SHARED_DEF = "/Library/Application Support"
-	CACHE_DEF         = "${home}/Library/Caches"
-	DATA_LOCAL_DEF    = CONFIG_LOCAL_DEF
-	DATA_SHARED_DEF   = CONFIG_SHARED_DEF
+	envHome     = "HOME"
+	envUserTemp = "TMPDATA"
 
-	CONFIG_LOCAL  = CONFIG_LOCAL_DEF
-	CONFIG_SHARED = CONFIG_SHARED_DEF
-	CACHE         = CACHE_DEF
-	DATA_LOCAL    = DATA_LOCAL_DEF
-	DATA_SHARED   = DATA_SHARED_DEF
+	defUserConfig        = "$HOME//Library/Application Support"
+	defGlobalConfig      = "/Library/Application Support"
+	defUserCache         = "$HOME/Library/Cache"
+	defGlobalCache       = "/Library/Cache"
+	defUserProgramData   = "$HOME//Library/Application\\ Support"
+	defGlobalProgramData = "/Library/Application\\ Support"
+	defDesktop           = "$HOME/Desktop"
+	defDocuments         = "$HOME/Documents"
+	defDownloads         = "$HOME/Downloads"
+	defPictures          = "$HOME/Pictures"
+	defMusic             = "$HOME/Music"
+	defVideos            = "$HOME/Videos"
+	defSaveGames         = "$HOME/Library/Application\\ Support"
 )
 
-var (
-	configGlobal []string
-	configLocal  string
-	cache        string
-	dataLocal    string
-	dataGlobal   []string
-)
+func create() Environ {
+	home := getenv(envHome)
+	userConfig := expandEnv(defUserConfig)
+	globalConfig := []string{expandEnv(defGlobalConfig)}
+	userTemp := getenv(envUserTemp)
+	userCache := expandEnv(defUserCache)
+	globalCache := defGlobalCache
+	userProgramData := expandEnv(defUserProgramData)
+	globalProgramData := []string{expandEnv(defGlobalProgramData)}
+	desktop := expandEnv(defDesktop)
+	documents := expandEnv(defDocuments)
+	downloads := expandEnv(defDownloads)
+	pictures := expandEnv(defPictures)
+	music := expandEnv(defMusic)
+	videos := expandEnv(defVideos)
+	saveGames := expandEnv(defSaveGames)
 
-func init() {
-	configLocal = os.ExpandEnv(CONFIG_LOCAL_DEF)
-	configGlobal = []string{os.ExpandEnv(CONFIG_SHARED_DEF)}
-	cache = os.ExpandEnv(CACHE_DEF)
-	dataLocal = os.ExpandEnv(DATA_LOCAL)
-	dataGlobal = []string{os.ExpandEnv(DATA_SHARED_DEF)}
+	return Environ{
+		home:      home,
+		desktop:   desktop,
+		documents: documents,
+		downloads: downloads,
+		pictures:  pictures,
+		music:     music,
+		videos:    videos,
+		saveGames: saveGames,
+
+		userConfig:        userConfig,
+		globalConfig:      globalConfig,
+		userTemp:          userTemp,
+		userCache:         userCache,
+		globalCache:       globalCache,
+		userProgramData:   userProgramData,
+		globalProgramData: globalProgramData,
+	}
+}
+
+func getenv(variable string) string {
+	return os.Getenv(variable)
+}
+func expandEnv(variable string) string {
+	return os.ExpandEnv(variable)
 }

@@ -70,7 +70,7 @@ Implementation details per operation system:
     | Pictures           |                             | $HOME/Pictures                       |
     | Music              |                             | $HOME/Music                          |
     | Videos             |                             | $HOME/Videos                         |
-    | SaveGames          |                             | $HOME//Library/Application Support   |
+    | SaveGames          |                             | $HOME/Library/Application Support   |
 
 Non existing values will be filled with the most similar value. If an OS has no global temp
  instead of nothing environ will return the local temp to enable a simple workflow
