@@ -13,7 +13,7 @@ const (
 	envHome              = "HOME"
 	envUserConfig        = "XDG_CONFIG_HOME"
 	envGlobalConfig      = "XDG_CONFIG_DIRS"
-	envUserTemp          = "XDG_CACHE_HOME"
+	envUserTemp          = "XDG_RUNTIME_DIR"
 	envUserCache         = "XDG_CACHE_HOME"
 	envUserProgramData   = "XDG_DATA_HOME"
 	envGlobalProgramData = "XDG_DATA_DIRS"
